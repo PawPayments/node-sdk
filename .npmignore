@@ -1,0 +1,8 @@
+tests
+tsconfig.json
+tsup.config.ts
+.gitignore
+.npmignore
+*.tgz
+coverage
+.vitest

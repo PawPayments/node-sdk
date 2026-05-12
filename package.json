@@ -1,0 +1,45 @@
+{
+  "name": "@pawpayments/sdk",
+  "version": "0.1.0",
+  "description": "Official Node.js SDK for the PawPayments Native V2 API",
+  "license": "MIT",
+  "homepage": "https://pawpayments.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pawpayments/node-sdk.git"
+  },
+  "author": "PawPayments <support@pawpayments.com>",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run --reporter=verbose tests/webhook.spec.ts",
+    "test:live": "vitest run --reporter=verbose tests/live.spec.ts tests/negative.spec.ts",
+    "test:all": "vitest run --reporter=verbose",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.3",
+    "vitest": "^1.4.0"
+  }
+}
