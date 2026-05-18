@@ -1,6 +1,6 @@
 {
   "name": "@pawpayments/sdk",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "description": "Official Node.js SDK for the PawPayments Native V2 API",
   "license": "MIT",
   "homepage": "https://pawpayments.com",
