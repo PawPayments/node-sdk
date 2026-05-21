@@ -32,6 +32,11 @@ describe("Webhook.verifyRawBody", () => {
     expect(Webhook.verifyRawBody(Buffer.from(body), hmacHex(body), apiKey)).toBe(true);
   });
 
+  it("works with Uint8Array input", () => {
+    const body = '{"order_id":"abc"}';
+    expect(Webhook.verifyRawBody(new TextEncoder().encode(body), hmacHex(body), apiKey)).toBe(true);
+  });
+
   it("rejects an empty signature", () => {
     expect(Webhook.verifyRawBody("{}", "", apiKey)).toBe(false);
   });
@@ -55,6 +60,11 @@ describe("Webhook.parsePayload", () => {
 
   it("accepts Buffer input", () => {
     const payload = Webhook.parsePayload(Buffer.from('{"a":1}'));
+    expect(payload.a).toBe(1);
+  });
+
+  it("accepts Uint8Array input", () => {
+    const payload = Webhook.parsePayload(new TextEncoder().encode('{"a":1}'));
     expect(payload.a).toBe(1);
   });
 });

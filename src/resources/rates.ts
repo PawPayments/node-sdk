@@ -3,7 +3,7 @@ import type { FiatCurrency, RatesParams } from "../types.js";
 
 export interface Rates {
   base: FiatCurrency;
-  rates: Record<string, number | string>;
+  rates: Record<string, string | null>;
   [key: string]: unknown;
 }
 

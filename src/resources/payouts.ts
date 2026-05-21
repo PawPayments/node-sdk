@@ -2,6 +2,7 @@ import { BaseResource } from "./_base.js";
 import type {
   BatchPayoutItem,
   CreatePayoutParams,
+  FeeBearer,
   ListResult,
   PayoutListParams,
   RequestOptions,
@@ -9,16 +10,23 @@ import type {
 
 export interface Payout {
   order_id: string;
-  status: string;
-  address: string;
-  amount: number | string;
-  fiat_amount?: number | string;
-  fiat_currency?: string;
-  asset: string;
-  ref?: string;
-  tx_hash?: string;
-  batch_id?: string | null;
-  created_at?: number | string;
+  status?: string | null;
+  address?: string | null;
+  amount?: number | string | null;
+  fiat_amount_usd?: number | string | null;
+  currency?: string | null;
+  ref?: string | null;
+  fee?: number | string | null;
+  fee_usd?: number | string | null;
+  energy_fee_usd?: number | string | null;
+  fee_bearer?: FeeBearer | null;
+  txid?: string | null;
+  tx_hashes?: string[] | null;
+  created_at?: number | string | null;
+  processed_at?: number | string | null;
+  voided?: boolean | null;
+  voided_at?: number | string | null;
+  voided_reason?: string | null;
   [key: string]: unknown;
 }
 
@@ -27,10 +35,16 @@ export interface PayoutCreated {
   [key: string]: unknown;
 }
 
+export interface BatchPayoutItemResult {
+  status: "pending" | "failed";
+  order_id?: string | null;
+  error?: string | null;
+  [key: string]: unknown;
+}
+
 export interface BatchPayoutResult {
   batch_id: string;
-  count: number;
-  items: PayoutCreated[];
+  items: BatchPayoutItemResult[];
   [key: string]: unknown;
 }
 

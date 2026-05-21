@@ -8,8 +8,7 @@ import { PayoutsResource } from "./resources/payouts.js";
 import { PermanentResource } from "./resources/permanent.js";
 import { RatesResource } from "./resources/rates.js";
 import type { Json, ListResult, Pagination, RequestOptions } from "./types.js";
-
-const DEFAULT_USER_AGENT = "pawpayments-node-sdk/0.1.0";
+import { DEFAULT_USER_AGENT } from "./version.js";
 
 export interface PawPaymentsOptions {
   apiKey: string;

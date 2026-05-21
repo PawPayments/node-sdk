@@ -54,6 +54,8 @@ additionally accept `"native"` to send a raw crypto amount.
 `paw.payouts.create` and `paw.payouts.batch` accept an optional `uniqId` (UUIDv4)
 for explicit idempotency control. If omitted, the SDK generates one with
 `crypto.randomUUID()`. The same `uniqId` re-used within 2 hours yields a 409.
+Payout requests use `address`. Invoice responses expose `address_to` and may
+include `address_from`.
 
 ## Webhook verification
 

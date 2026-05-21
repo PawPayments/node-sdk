@@ -4,11 +4,13 @@ import type { LedgerListParams, ListResult } from "../types.js";
 export interface LedgerEntry {
   type: "income" | "payout" | "refund";
   amount: number | string;
-  asset: string;
-  fiat_amount?: number | string;
-  fiat_currency?: string;
-  reference_id?: string;
-  created_at?: number | string;
+  reference_id: string;
+  invoice_id?: string;
+  currency?: string | null;
+  asset?: string | null;
+  fee?: number | string | null;
+  status?: string | null;
+  created_at?: number | string | null;
   [key: string]: unknown;
 }
 

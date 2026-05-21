@@ -3,10 +3,10 @@ import type { ListResult, NotificationListParams } from "../types.js";
 
 export interface NotificationLog {
   id: string;
-  invoice_id?: string;
-  url?: string;
+  invoice_id: string;
+  url?: string | null;
   status_code?: number | null;
-  attempt: number;
+  attempt?: number;
   sent_at?: number | null;
   response_body?: string | null;
   [key: string]: unknown;

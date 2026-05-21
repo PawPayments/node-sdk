@@ -20,7 +20,7 @@ export interface PermanentAddress {
 
 export interface PermanentDeactivated {
   id: string;
-  active: false;
+  deactivated: true;
   [key: string]: unknown;
 }
 

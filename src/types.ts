@@ -25,6 +25,7 @@ export type FiatCurrency =
 export type PayoutFiatCurrency = FiatCurrency | "native";
 export type BillingType = "VARY" | "STATIC";
 export type FeeBearer = "merchant" | "client";
+export type WebhookFormat = "native_v2" | "cryptomus" | "heleket" | "nowpayments";
 export type PermanentFamily =
   | "evm"
   | "bitcoin"
@@ -76,6 +77,7 @@ export interface CreateInvoiceParams {
   price_modifier?: number;
   fee_bearer?: FeeBearer;
   payer_info?: PayerInfo;
+  webhook_format?: WebhookFormat;
   permanent_address?: boolean;
   user_id?: string;
 }
@@ -90,6 +92,11 @@ export interface InvoiceListParams {
   order_ids?: string[] | string;
   status?: string;
   asset?: string;
+}
+
+export interface InvoiceAddressFlow {
+  address_to?: string | null;
+  address_from?: string | null;
 }
 
 export interface CreatePayoutParams {

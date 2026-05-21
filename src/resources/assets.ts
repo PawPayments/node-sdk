@@ -2,12 +2,12 @@ import { BaseResource } from "./_base.js";
 
 export interface Asset {
   asset: string;
-  name: string;
   symbol: string;
-  network?: string;
-  decimals: number;
+  chain: string;
+  type: string;
+  network_family?: string | null;
+  min_amount: number;
   enabled: boolean;
-  min_amount?: number | string;
   [key: string]: unknown;
 }
 
