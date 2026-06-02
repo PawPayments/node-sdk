@@ -105,6 +105,8 @@ export interface CreatePayoutParams {
   fiat_currency: PayoutFiatCurrency;
   asset: string;
   ref?: string;
+  /** Who covers the network fee. Defaults to `"merchant"`. */
+  fee_bearer?: FeeBearer;
 }
 
 export interface BatchPayoutItem {
@@ -113,6 +115,8 @@ export interface BatchPayoutItem {
   fiat_currency: PayoutFiatCurrency;
   asset: string;
   ref?: string;
+  /** Who covers the network fee. Defaults to `"merchant"`. */
+  fee_bearer?: FeeBearer;
 }
 
 export interface PayoutListParams {

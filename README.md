@@ -57,6 +57,20 @@ for explicit idempotency control. If omitted, the SDK generates one with
 Payout requests use `address`. Invoice responses expose `address_to` and may
 include `address_from`.
 
+Each payout (and each batch item) accepts an optional `fee_bearer` of
+`"merchant"` or `"client"` to choose who covers the network fee — defaults to
+`"merchant"`:
+
+```ts
+await paw.payouts.create({
+  address: "T…",
+  amount: 50,
+  fiat_currency: "USD",
+  asset: "usdt_tron",
+  fee_bearer: "client",
+});
+```
+
 ## Webhook verification
 
 Verify the `X-Paw-Signature` header against the raw request body:
