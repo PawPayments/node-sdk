@@ -40,6 +40,26 @@ describe("Webhook.verifyRawBody", () => {
   it("rejects an empty signature", () => {
     expect(Webhook.verifyRawBody("{}", "", apiKey)).toBe(false);
   });
+
+  it("rejects an empty api key", () => {
+    const body = '{"order_id":"abc"}';
+    const sig = createHmac("sha256", "").update(body).digest("hex");
+    expect(Webhook.verifyRawBody(body, sig, "")).toBe(false);
+  });
+
+  it("accepts an uppercase hex signature", () => {
+    const body = '{"order_id":"abc"}';
+    expect(Webhook.verifyRawBody(body, hmacHex(body).toUpperCase(), apiKey)).toBe(true);
+  });
+
+  it("rejects a header that is not exactly 64 hex characters", () => {
+    const body = '{"order_id":"abc"}';
+    const sig = hmacHex(body);
+    expect(Webhook.verifyRawBody(body, sig.slice(0, 63), apiKey)).toBe(false);
+    expect(Webhook.verifyRawBody(body, `${sig}0`, apiKey)).toBe(false);
+    expect(Webhook.verifyRawBody(body, `${sig}\n`, apiKey)).toBe(false);
+    expect(Webhook.verifyRawBody(body, "g".repeat(64), apiKey)).toBe(false);
+  });
 });
 
 describe("Webhook.parsePayload", () => {
@@ -66,5 +86,53 @@ describe("Webhook.parsePayload", () => {
   it("accepts Uint8Array input", () => {
     const payload = Webhook.parsePayload(new TextEncoder().encode('{"a":1}'));
     expect(payload.a).toBe(1);
+  });
+});
+
+describe("Webhook.coversAmount", () => {
+  it("accepts an invoice issued for the total", () => {
+    const payload = { initial_fiat_amount: 100, fiat_amount: 100, fiat_currency: "USD" };
+    expect(Webhook.coversAmount(payload, "USD", 100)).toBe(true);
+    expect(Webhook.coversAmount(payload, "usd", "100.00")).toBe(true);
+    expect(Webhook.coversAmount({ ...payload, fiat_currency: "usd" }, "USD", 100)).toBe(true);
+  });
+
+  it("trusts the gateway's own underpay tolerance", () => {
+    // A merchant may accept 20% short; the gateway then sends `success` with 80.
+    const payload = { initial_fiat_amount: "100", fiat_amount: "80", fiat_currency: "EUR" };
+    expect(Webhook.coversAmount(payload, "EUR", 100)).toBe(true);
+  });
+
+  it("refuses a webhook for a cheaper invoice", () => {
+    const payload = { initial_fiat_amount: 1, fiat_amount: 1, fiat_currency: "USD" };
+    expect(Webhook.coversAmount(payload, "USD", 500)).toBe(false);
+  });
+
+  it("allows only a cent of rounding", () => {
+    expect(Webhook.coversAmount({ initial_fiat_amount: 99.99, fiat_currency: "USD" }, "USD", 100)).toBe(true);
+    expect(Webhook.coversAmount({ initial_fiat_amount: 99.98, fiat_currency: "USD" }, "USD", 100)).toBe(false);
+    expect(Webhook.coversAmount({ initial_fiat_amount: 120, fiat_currency: "USD" }, "USD", 100)).toBe(true);
+  });
+
+  it("refuses another or a missing currency", () => {
+    expect(Webhook.coversAmount({ initial_fiat_amount: 100000, fiat_currency: "IDR" }, "USD", 100)).toBe(false);
+    expect(Webhook.coversAmount({ initial_fiat_amount: 100 }, "USD", 100)).toBe(false);
+    expect(Webhook.coversAmount({ initial_fiat_amount: 100, fiat_currency: "USD" }, "", 100)).toBe(false);
+    // Unknown on both sides is not a match.
+    expect(Webhook.coversAmount({ initial_fiat_amount: 100 }, "", 100)).toBe(false);
+  });
+
+  it("refuses a payload without the issued amount", () => {
+    expect(Webhook.coversAmount({ fiat_amount: 100, fiat_currency: "USD" }, "USD", 100)).toBe(false);
+    expect(Webhook.coversAmount({ initial_fiat_amount: "x", fiat_currency: "USD" }, "USD", 100)).toBe(false);
+    expect(Webhook.coversAmount({ initial_fiat_amount: null, fiat_currency: "USD" }, "USD", 100)).toBe(false);
+    expect(Webhook.coversAmount({ initial_fiat_amount: "", fiat_currency: "USD" }, "USD", 100)).toBe(false);
+  });
+
+  it("refuses a total that is not a number", () => {
+    const payload = { initial_fiat_amount: 100, fiat_currency: "USD" };
+    expect(Webhook.coversAmount(payload, "USD", "")).toBe(false);
+    expect(Webhook.coversAmount(payload, "USD", "abc")).toBe(false);
+    expect(Webhook.coversAmount(payload, "USD", Number.NaN)).toBe(false);
   });
 });
