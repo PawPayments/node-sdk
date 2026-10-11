@@ -73,7 +73,8 @@ export const Webhook = {
     const expected = toNumber(total);
     if (issued === null || expected === null) return false;
 
+    // In whole cents: as binary floats, 2.02 - 0.01 lands just above 2.01.
     // One cent absorbs rounding of the fiat amounts on either side.
-    return issued >= expected - 0.01;
+    return Math.round(issued * 100) >= Math.round(expected * 100) - 1;
   },
 };

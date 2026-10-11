@@ -114,6 +114,21 @@ describe("Webhook.coversAmount", () => {
     expect(Webhook.coversAmount({ initial_fiat_amount: 120, fiat_currency: "USD" }, "USD", 100)).toBe(true);
   });
 
+  it("counts the cent exactly for every amount up to 1000.00", () => {
+    // 2.02 - 0.01 is a hair above 2.01 in binary floating point.
+    expect(Webhook.coversAmount({ initial_fiat_amount: 2.01, fiat_currency: "USD" }, "USD", 2.02)).toBe(true);
+    const wrong: number[] = [];
+    for (let cents = 2; cents <= 100000; cents++) {
+      const total = cents / 100;
+      const oneShort = { initial_fiat_amount: (cents - 1) / 100, fiat_currency: "USD" };
+      const twoShort = { initial_fiat_amount: (cents - 2) / 100, fiat_currency: "USD" };
+      if (!Webhook.coversAmount(oneShort, "USD", total) || Webhook.coversAmount(twoShort, "USD", total)) {
+        wrong.push(total);
+      }
+    }
+    expect(wrong).toEqual([]);
+  });
+
   it("refuses another or a missing currency", () => {
     expect(Webhook.coversAmount({ initial_fiat_amount: 100000, fiat_currency: "IDR" }, "USD", 100)).toBe(false);
     expect(Webhook.coversAmount({ initial_fiat_amount: 100 }, "USD", 100)).toBe(false);
