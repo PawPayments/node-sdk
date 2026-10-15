@@ -19,14 +19,18 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
 
-      - run: npm install -g pnpm@9 --quiet
+      # Trusted Publishing needs npm >= 11.5.1; older npm publishes anonymously
+      # and gets a 404. Don't depend on the npm that Node 24.x happens to ship.
+      - run: npm install -g npm@11 pnpm@9 --quiet && npm --version
       - run: pnpm install --frozen-lockfile=false
       - run: pnpm test && pnpm build
 
       # Authenticated by the OIDC token GitHub issues to this workflow, which
       # npmjs.com trusts for @pawpayments/sdk (package settings → Trusted
-      # Publisher: pawpayments/node-sdk, release.yml). Provenance is attached
-      # automatically.
+      # Publisher: PawPayments/node-sdk, release.yml — the owner is matched
+      # case-sensitively, as GitHub spells it). Provenance is attached
+      # automatically and requires package.json repository.url to name the
+      # same repository, in the same case.
       - run: npm publish --access public
 
       - run: gh release create "$GITHUB_REF_NAME" --generate-notes
